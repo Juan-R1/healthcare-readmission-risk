@@ -1,0 +1,23 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+.Python
+build/
+dist/
+*.egg-info/
+
+# Virtual environments
+venv/
+.env/
+
+# Data artifacts
+data/
+
+# Jupyter notebooks
+*.ipynb_checkpoints/
+
+# OS files
+.DS_Store
