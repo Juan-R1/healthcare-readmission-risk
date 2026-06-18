@@ -18,7 +18,7 @@ from typing import Tuple
 import pandas as pd
 from sklearn.compose import ColumnTransformer
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score, roc_auc_score
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
@@ -33,7 +33,7 @@ DATA_FILE = (
 
 def load_data() -> Tuple[pd.DataFrame, pd.Series]:
     """Load features and target from the processed CSV."""
-    df = pd.read_csv(DATA_FILE)
+    df = pd.read_csv(DATA_FILE, low_memory=False)
     target = df["readmitted_flag"]
     features = df.drop(columns=["readmitted_flag", "readmitted"])
     return features, target
@@ -51,7 +51,7 @@ def build_model(feature_df: pd.DataFrame) -> Pipeline:
             ("cat", OneHotEncoder(handle_unknown="ignore"), categorical_cols),
         ]
     )
-    model = LogisticRegression(max_iter=200, n_jobs=-1)
+    model = LogisticRegression(max_iter=1000)
     clf = Pipeline(steps=[("preprocessor", preprocessor), ("model", model)])
     return clf
 
@@ -69,8 +69,14 @@ def main() -> None:
     preds = clf.predict(X_test)
     probas = clf.predict_proba(X_test)[:, 1]
     acc = accuracy_score(y_test, preds)
+    precision = precision_score(y_test, preds, zero_division=0)
+    recall = recall_score(y_test, preds, zero_division=0)
+    f1 = f1_score(y_test, preds, zero_division=0)
     auc = roc_auc_score(y_test, probas)
     print(f"Accuracy: {acc:.3f}")
+    print(f"Precision: {precision:.3f}")
+    print(f"Recall: {recall:.3f}")
+    print(f"F1 score: {f1:.3f}")
     print(f"ROC AUC: {auc:.3f}")
 
 
